@@ -22,15 +22,21 @@ jobs:
       - name: Install emulator dependencies
         run: pip install -r emulator/requirements.txt
 
+      - name: Show backend files
+        run: |
+          pwd
+          find backend -maxdepth 2 -type f
+
       - name: Start backend
         run: |
           python backend/app.py > backend.log 2>&1 &
-          echo $! > backend.pid
+          sleep 5
+          cat backend.log || true
 
       - name: Wait for backend on localhost:5000
         run: |
-          for i in {1..20}; do
-            if curl -s http://localhost:5000 >/dev/null 2>&1; then
+          for i in {1..15}; do
+            if curl -s http://localhost:5000/api/latest >/dev/null 2>&1; then
               echo "Backend is up"
               exit 0
             fi
@@ -38,7 +44,8 @@ jobs:
             sleep 2
           done
           echo "Backend did not start in time"
-          cat backend.log
+          echo "=== BACKEND LOG ==="
+          cat backend.log || true
           exit 1
 
       - name: Run emulator for 20 seconds

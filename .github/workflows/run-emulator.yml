@@ -1,10 +1,10 @@
-name: Run emulator
+name: Run backend and emulator
 
 on:
   workflow_dispatch:
 
 jobs:
-  run-emulator:
+  run-system:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,8 +16,35 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: pip install requests
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
 
-      - name: Run emulator
-        run: python emulator/emulator.py
+      - name: Install emulator dependencies
+        run: pip install -r emulator/requirements.txt
+
+      - name: Start backend
+        run: |
+          python backend/app.py > backend.log 2>&1 &
+          echo $! > backend.pid
+
+      - name: Wait for backend on localhost:5000
+        run: |
+          for i in {1..20}; do
+            if curl -s http://localhost:5000 >/dev/null 2>&1; then
+              echo "Backend is up"
+              exit 0
+            fi
+            echo "Waiting for backend..."
+            sleep 2
+          done
+          echo "Backend did not start in time"
+          cat backend.log
+          exit 1
+
+      - name: Run emulator for 20 seconds
+        run: |
+          timeout 20s python emulator/emulator.py || true
+
+      - name: Show backend log
+        if: always()
+        run: cat backend.log || true

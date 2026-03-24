@@ -16,13 +16,13 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Show files
-        run: |
-          pwd
-          ls -R
-
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run python emulator.py
+      - name: Show files
+        run: |
+          pwd
+          find . -type f
+
+      - name: Run emulator
         run: python ./emulator.py

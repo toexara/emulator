@@ -14,10 +14,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+
+      - name: Show files
+        run: |
+          pwd
+          ls -R
 
       - name: Install dependencies
         run: pip install requests
 
       - name: Run python emulator.py
-        run: python emulator.py
+        run: python ./emulator.py

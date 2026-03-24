@@ -1,4 +1,4 @@
-name: Run Emulator
+name: Run emulator
 
 on:
   workflow_dispatch:
@@ -19,5 +19,5 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run emulator
+      - name: Run python emulator.py
         run: python emulator.py
